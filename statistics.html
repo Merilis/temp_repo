@@ -1,0 +1,509 @@
+---
+layout: default_layout
+title: Statistics API (Beta)
+sub_title: Export your parking statistics
+permalink: /statistics_api/
+include_in_section_menu: true
+order: 3
+---
+<h1 class="title">Statistics API (Beta)</h1>
+
+<h2 class="subtitle">The Statistics API allows you to integrate with Autopay to retrieve data about parking sessions.</h2>
+<div class="content">
+
+    <blockquote>
+		<b>This API is currently in Beta. We will support each version of this API for 3 months after deprecating them.
+		Please be ready to make necessary changes if you decide to use the API while in Beta.</b>
+    </blockquote>
+
+	<h3>Note:</h3>
+    <ul>
+		<li>Access to this API is charged. Please contact your Autopay representative for details.</li>
+        <li>Do not query API more than one time per 5 minutes for each parking zone.</li>
+        <li>The data from live environment will be available though API within 12 hours. Do not base real time system on this API.</li>
+    </ul>
+
+	<br/>
+
+    <p>Make sure that you have acquired Client Id and Client Secret and a valid
+        access token for your application to use this API.
+        Please see the <a href="/authentication">Authentication page</a> for preparatory steps.</p>
+	<br/>
+
+    <h4 class="title">Available resources:</h4>
+    <ul>
+        <li><a href="#GETparkingsessions">GET (read the list of parking sessions)</a>
+        </li>
+    </ul>
+    <p>In case of encounting error messages, see <a href="#StatisticsAPIErrors">HERE</a>.
+    </p>
+    <br>
+    <!--      GET      -->
+    <h2 class="title" id="GETparkingsessions">Resource: GET</h2>
+    <h3 class="title">Service: Get parking sessions</h3>
+    <p>This method allows you to read data of parking sessions. </p>
+    <h3 class="title">Endpoint</h3>
+    <h4 class="title">Environment: Production (for using the API)</h4>
+    <pre>GET https://api.autopay.io/statistics/v1/parking_sessions?from={date-time}to={date-time}</pre>
+
+    <h4 class="title">Request parameters:</h4>
+    <ul>
+        <li>The request deploys <a href="https://www.w3schools.com/js/js_json_intro.asp" target="_blank">JSON</a> syntax.
+        </li>
+        <li>The headers must include a valid <a href="/authentication">access token</a>.</li>
+        <li>The path must include from and to date-time parameters in ISO 8601 format (?from={date-time}to={date-time}).</li>
+        <li>Please see the table below for all available path parameters to specify the request responses.</li>
+    </ul>
+    <table>
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>from</td>
+            <td>date-time</td>
+            <td>yes</td>
+            <td>Date and time in ISO 8601 format from which to query statistics. e.g. 2017-08-29T05:46:53.001Z</td>
+        </tr>
+        <tr>
+            <td>to</td>
+            <td>date-time</td>
+            <td>yes</td>
+            <td>Date and time in ISO 8601 format to what time to query statistics. e.g. 2017-08-29T05:46:53.001Z</td>
+        </tr>
+        <tr>
+            <td>zone_code</td>
+            <td>string</td>
+            <td>no</td>
+            <td>Unique zone identification. If not specified statistics from all zones will be returned.</td>
+        </tr>
+        <tr>
+            <td>limit</td>
+            <td>integer</td>
+            <td>no</td>
+            <td>How many results to show in a response - a value between 1 and 10 000. Default value is 10 000.</td>
+        </tr>
+        <tr>
+            <td>offset</td>
+            <td>integer</td>
+            <td>no</td>
+            <td>Which set of rows to show in response. The amount of rows in a set is defined by the parameter "limit".</td>
+        </tr>
+        </tbody>
+    </table>
+	<h4>Request path example:</h4>
+	<pre>https://api.autopay.io/statistics/v1/parking_sessions?from=2017-01-01T00:00:00.000Z&to=2018-01-01T00:00:00.000Z&limit=2&zone_code=3001&offset=0
+</pre>
+	<br>
+    <h3 class="title">Success response</h3>
+    <p>Code: 200</p>
+    <table>
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>parking_sessions:</td>
+            <td>array</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">operator</td>
+            <td>string</td>
+            <td>Unique identification code of the parking operator.</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">payment_status</td>
+            <td>string</td>
+            <td>Payment status of this parking session. See <a href="#PaymentStatus">here</a> for the list of all payment status
+                types.
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">type</td>
+            <td>string</td>
+            <td>Parking session type. See <a href="#SessionTypes">here</a> for the list of all parking session types.</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">client_type</td>
+            <td>string</td>
+            <td>Client type (customer type). See <a href="#ClientTypes">here</a> for the list of all client types.</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">start_time</td>
+            <td>string (date-time)</td>
+            <td>Start time of parking in ISO 8601 format</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">end_time</td>
+            <td>string (date-time)</td>
+            <td>End time of parking in ISO 8601 format</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">exit_time</td>
+            <td>string (date-time)</td>
+            <td>Exit time of the car from the zone in ISO 8601</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">duration</td>
+            <td>integer</td>
+            <td>Duration of parking (in seconds)</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">cost:</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">amount</td>
+            <td>integer</td>
+            <td>Total sum charged for this parking session</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">number_of_decimals</td>
+            <td>integer</td>
+            <td>Number of decimals of the total sum.</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">currency</td>
+            <td>string</td>
+            <td>Currency of the payment</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">concurrent_parking_exceeded</td>
+            <td>boolean</td>
+            <td>Is the number of parking permits issued for the Tenant exceeded or not</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">concurrent_parking_billed_to_tenant</td>
+            <td>boolean</td>
+            <td>Is the exceeded parking billed to the Tenant or not</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">landlord_id</td>
+            <td>integer</td>
+            <td>Unique identification number of the Landlord</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">zone:</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">name</td>
+            <td>string</td>
+            <td>Name of the parking zone</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">code</td>
+            <td>string</td>
+            <td>Code of the parking zone</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">country</td>
+            <td>string</td>
+            <td>Name of the country</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">vehicle origin:</td>
+            <td>array</td>
+            <td>Array can be empty</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">country code</td>
+            <td>string</td>
+            <td>Country code of the vehicle.</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">postal code</td>
+            <td>string</td>
+            <td>Postal code of the vehicle.</td>
+        </tr>
+        <tr>
+            <td style="padding-left:45px">payments:</td>
+            <td>array</td>
+            <td>Array can be empty</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">amount</td>
+            <td>integer</td>
+            <td>Total sum charged for all payments</td>
+        </tr>
+        <tr>
+            <td style="padding-left:65px">number_of_decimals</td>
+            <td>integer</td>
+            <td>Number of decimals of the total sum</td>
+        </tr>
+		<tr>
+            <td>response_summary:</td>
+            <td></td>
+            <td></td>
+        </tr>
+		<tr>
+            <td style="padding-left:45px">more_results</td>
+            <td>boolean</td>
+            <td>Is there more sessions matching the path parameters</td>
+		</tr>
+		<tr>
+            <td style="padding-left:45px">next_offset</td>
+            <td>integer</td>
+            <td>Offset number to use as a path parameter for the next request to see more results</td>
+		</tr>
+        </tbody>
+    </table>
+    <br/>
+    <h3 class="title">
+        Example request:
+    </h3>
+    <pre>GET https://api.test.autopay.io/statistics/v1/parking_sessions?from=2017-01-01T00:00:00.000Z&to=2018-01-01T00:00:00.000Z&limit=2&zone_code=3001&offset=0</pre>
+	<p>This request path deploys the path parameters <i>from</i>, <i>to</i>, <i>zone_code</i> (value: 3001), <i>limit</i> (2 rows), <i>offset</i> (the first set - in position 0 in the sequence).</p>
+    <h4 class="subtitle">Example: success responce</h4>
+    {% highlight json %}
+    {% raw %}
+    {
+    "parking_sessions": [
+    {
+    "operator": "test",
+    "payment_status": "PAID",
+    "type": "REGULAR_PARKING",
+    "client_type": "REGISTERED_CUSTOMER",
+    "start_time": "2017-01-01T10:00:00.000Z",
+    "end_time": "2017-01-01T12:05:00.000Z",
+    "exit_time": "2017-01-01T12:05:00.000Z",
+    "duration": 7500,
+    "cost": {
+    "amount": 18000,
+    "number_of_decimals": 2,
+    "currency": "SEK"
+    },
+    "concurrent_parking_exceeded": false,
+    "concurrent_parking_billed_to_tenant": false,
+    "landlord_id": 0,
+    "zone": {
+    "name": "zwz_zone_a",
+    "code": "3001",
+    "country": "  "
+    },
+    "vehicle_origin": {},
+    "payments": []
+    },
+    {
+    "operator": "test",
+    "payment_status": "PAID",
+    "type": "REGULAR_PARKING",
+    "client_type": "REGISTERED_CUSTOMER",
+    "start_time": "2017-01-01T10:00:00.000Z",
+    "end_time": "2017-01-01T12:05:00.000Z",
+    "exit_time": "2017-01-01T12:05:00.000Z",
+    "duration": 7500,
+    "cost": {
+    "amount": 18000,
+    "number_of_decimals": 2,
+    "currency": "SEK"
+    },
+    "concurrent_parking_exceeded": false,
+    "concurrent_parking_billed_to_tenant": false,
+    "landlord_id": 0,
+    "zone": {
+    "name": "zwz_zone_a",
+    "code": "3001",
+    "country": "  "
+    },
+    "vehicle_origin": {},
+    "payments": []
+    }
+    ],
+    "response_summary": {
+    "more_results": true,
+    "next_offset": 1
+    }
+    }
+    {% endraw %}
+    {% endhighlight %}
+
+    <br>
+
+    <h2 id="ClientTypes">Client types</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Client type</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>TENANT</td>
+            <td>This client is a Tenant in Autopay</td>
+        </tr>
+        <tr>
+            <td>REGISTERED_CUSTOMER</td>
+            <td>This client is a registered customer in Autopay</td>
+        </tr>
+        <tr>
+            <td>UNREGISTERED_CUSTOMER</td>
+            <td>This client is an unregistered customer in Autopay</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <h2 id="PaymentStatus">Payment status types</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Payment status</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>FREE</td>
+            <td>This parking session is free of charge</td>
+        </tr>
+        <tr>
+            <td>GRATIS</td>
+            <td>This parking session is free of charge</td>
+        </tr>
+        <tr>
+            <td>UNPAID</td>
+            <td>This parking session has not been paid for</td>
+        </tr>
+        <tr>
+            <td>PAID</td>
+            <td>This parking session has been paid for</td>
+        </tr>
+        <tr>
+            <td>INVOICED</td>
+            <td>An invoice has been issued for this parking session</td>
+        </tr>
+        <tr>
+            <td>PARTIALLY_PAID</td>
+            <td>This parking session has been partially paid for</td>
+        </tr>
+        <tr>
+            <td>UNDETERMINED</td>
+            <td>The payment status of this parking session is undetermined</td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+
+    <h2 id="SessionTypes">Parking session types</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Parking session type</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>CONTRACT_PARKING</td>
+            <td>This parking session is bound to a contract</td>
+        </tr>
+        <tr>
+            <td>REGULAR_PARKING</td>
+            <td>This is a regular parking session</td>
+        </tr>
+        <tr>
+            <td>TAPNPARK_PARKING</td>
+            <td>This parking session has been validated in the Tap & Park system</td>
+        </tr>
+        <tr>
+            <td>PARKING_PROVIDER_PARKING</td>
+            <td>This parking session is connected to a </td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <h2 id="StatisticsAPIErrors">Error messages</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>error:</td>
+            <td>array</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>code</td>
+            <td>integer</td>
+            <td>Specific code of the error. Example: 400 - bad request. This request can not be fulfilled due to bad syntax.
+            </td>
+        </tr>
+        <tr>
+            <td>message</td>
+            <td>string</td>
+            <td>Reason of error. E.g. "bad request" (this request can not be fulfilled due to bad syntax).</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br/>
+    <h3>Error response example</h3>
+    <h4> Example request - invalid date format:</h4>
+    <pre>GET https://api.autopay.io/statistics/v1/parking_sessions?from=20000017:00:00.03.000Z&to=2017-12-31T23:59:59.032Z</pre>
+{% highlight json %}
+{% raw %}
+{
+    "error": {
+        "code": 400,
+        "message": "Bad request."
+    }
+}
+{% endraw %}
+{% endhighlight %}
+    <h4>Error codes and messages:</h4>
+    <table>
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Message</th>
+            <th>Explanation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>400</td>
+            <td>Bad request.</td>
+            <td>Error in the request parameter</td>
+        </tr>
+        <tr>
+            <td>401</td>
+            <td>Invalid credentials.</td>
+            <td>No token</td>
+        </tr>
+        <tr>
+            <td>403</td>
+            <td>Forbidden</td>
+            <td>A problem with token</td>
+        </tr>
+        <tr>
+            <td>404</td>
+            <td>Not found.</td>
+            <td>Error in the request path</td>
+        </tr>
+        <tr>
+            <td>500</td>
+            <td>System error.</td>
+            <td>Error in database</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
